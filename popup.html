@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reels Auto-Scroller</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="Logo">
+    <h1>Reels Auto-Scroller</h1>
+  </div>
+
+  <div class="status-section">
+    <div class="status-indicator">
+      <div class="status-dot active" id="statusDot"></div>
+      <span class="status-text" id="statusText">Active</span>
+    </div>
+    <div class="controls">
+      <button class="btn btn-primary" id="pauseBtn">Pause</button>
+    </div>
+  </div>
+
+  <div class="toggle-container">
+    <div class="delay-control">
+      <div class="delay-label">Scroll Delay</div>
+      <input type="range" class="delay-slider" id="delaySlider" min="500" max="5000" step="500" value="2000">
+      <div class="delay-value" id="delayValue">2s after reel ends</div>
+    </div>
+  </div>
+
+  <div class="toggle-container">
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Auto-Like Followed Creators</div>
+        <div class="toggle-sublabel">Like reels from accounts you follow</div>
+      </div>
+      <div class="toggle-switch" id="autoLikeToggle"></div>
+    </div>
+  </div>
+
+  <div class="toggle-container">
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Show Auto-Scroll Pill</div>
+        <div class="toggle-sublabel">Display the on-page overlay badge</div>
+      </div>
+      <div class="toggle-switch active" id="showPillToggle"></div>
+    </div>
+  </div>
+
+  <div class="shortcut-hint">
+    Refresh Instagram after installing. Press <kbd>P</kbd> or click the on-page badge to pause.
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
