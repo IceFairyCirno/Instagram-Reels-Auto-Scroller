@@ -1,6 +1,6 @@
 # Instagram Reels Auto-Scroller
 
-A Chrome extension that automatically scrolls to the next Instagram Reel after the current one finishes playing.
+A Chrome extension for those who have completely surrendered their attention span to the reels. When your thumb is too physically exhausted from hours of continuous swiping to even lift itself, this tool takes over—seamlessly automating your descent into the doom-scrolling abyss without a single interruption to your brainrot routine. Because why look away from the screen when you can let an automation script feed short-form slop directly into your eyes indefinitely?
 
 ## Features
 
