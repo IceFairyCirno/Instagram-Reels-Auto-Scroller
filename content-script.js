@@ -463,28 +463,66 @@
     );
   }
 
-  function getFollowControlLabel(el) {
-    const aria = (el.getAttribute('aria-label') || '').trim();
-    if (aria && aria.length <= 24) return aria;
+  function normalizeLabelText(text) {
+    return (text || '').replace(/\s+/g, ' ').trim();
+  }
 
-    const text = (el.textContent || '').trim();
-    if (text.length <= 20) return text;
+  function getFollowControlLabel(el) {
+    if (!el) return null;
+
+    const ariaCandidates = [el.getAttribute('aria-label') || '', el.getAttribute('title') || ''];
+    for (const node of el.querySelectorAll('[aria-label], [title]')) {
+      const label = node.getAttribute('aria-label') || node.getAttribute('title') || '';
+      if (label) ariaCandidates.push(label);
+    }
+
+    for (const candidate of ariaCandidates) {
+      const trimmed = normalizeLabelText(candidate);
+      if (trimmed && trimmed.length <= 24) return trimmed;
+    }
+
+    const visited = new Set();
+    const stack = [el];
+    while (stack.length) {
+      const node = stack.pop();
+      if (!node || visited.has(node)) continue;
+      visited.add(node);
+
+      if (node.nodeType === Node.TEXT_NODE) {
+        const trimmed = normalizeLabelText(node.textContent || '');
+        if (trimmed && trimmed.length <= 24) return trimmed;
+        continue;
+      }
+
+      if (node.nodeType !== Node.ELEMENT_NODE) continue;
+      if (['SCRIPT', 'STYLE'].includes(node.tagName)) continue;
+
+      const text = normalizeLabelText(node.textContent || '');
+      if (text && text.length <= 24) {
+        const lower = text.toLowerCase();
+        if (/(follow|following|追蹤|追踪|關注|回關)/i.test(lower)) return text;
+      }
+
+      for (const child of node.childNodes) stack.push(child);
+    }
 
     return null;
   }
 
   function isFollowingLabel(label) {
     if (!label) return false;
+    const normalized = normalizeLabelText(label).toLowerCase();
     if (FOLLOWING_LABELS.has(label)) return true;
     if (/追蹤中|正在追蹤|已追蹤|正在关注|关注中|已关注/i.test(label)) return true;
-    return /^following$/i.test(label);
+    return /(^|\b)(following|已追蹤|正在追蹤|追蹤中|已關注|正在关注|关注中|已关注|關注)(\b|$)/i.test(normalized);
   }
 
   function isFollowLabel(label) {
     if (!label) return false;
+    const normalized = normalizeLabelText(label).toLowerCase();
     if (label === 'Follow Back') return true;
     if (FOLLOW_LABELS.has(label)) return true;
-    return /^follow$/i.test(label);
+    return /(^|\b)(follow(?: back)?|追蹤|追踪|關注|回關)(\b|$)/i.test(normalized);
   }
 
   function areElementsAdjacent(a, b, maxDistance) {
@@ -552,7 +590,7 @@
   function findOverlayFollowControl(video, mode) {
     if (!video) return null;
 
-    for (const el of document.querySelectorAll('button, [role="button"], div[role="button"]')) {
+    for (const el of document.querySelectorAll('*')) {
       if (!isOverReelOverlay(el, video)) continue;
       if (isReelActionButton(el)) continue;
 
@@ -644,7 +682,7 @@
 
     const profileLink = findCreatorProfileLink(video);
     if (!profileLink) {
-      log('Not followed: could not find creator profile link on reel');
+      log('No creator profile link found; not auto-liking');
       return false;
     }
 
@@ -665,7 +703,7 @@
       return true;
     }
 
-    log('Not followed: no Following state near creator', username);
+    log('No explicit follow label found; not auto-liking', username);
     return false;
   }
 
