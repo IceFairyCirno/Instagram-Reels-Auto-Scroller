@@ -7,8 +7,29 @@ const defaultState = {
   showPill: true
 };
 
+function isInstagramReelsUrl(url) {
+  if (!url) return false;
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== 'www.instagram.com') return false;
+
+    const path = parsed.pathname.toLowerCase();
+    return path === '/reels' || path.startsWith('/reels/') || path === '/reel' || path.startsWith('/reel/');
+  } catch {
+    return false;
+  }
+}
+
 function broadcastState(state) {
-  chrome.tabs.query({ url: '*://www.instagram.com/*' }, (tabs) => {
+  chrome.tabs.query({
+    url: [
+      '*://www.instagram.com/reels',
+      '*://www.instagram.com/reels/*',
+      '*://www.instagram.com/reel',
+      '*://www.instagram.com/reel/*'
+    ]
+  }, (tabs) => {
     for (const tab of tabs) {
       chrome.tabs
         .sendMessage(tab.id, { type: 'stateUpdate', state })
@@ -48,7 +69,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status !== 'complete') return;
-  if (!tab.url || !tab.url.includes('instagram.com')) return;
+  if (!isInstagramReelsUrl(tab.url)) return;
 
   chrome.storage.local.get(['reelScrollerState'], (result) => {
     const state = result.reelScrollerState || defaultState;

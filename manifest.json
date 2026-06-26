@@ -8,7 +8,10 @@
     "storage"
   ],
   "host_permissions": [
-    "*://www.instagram.com/*"
+    "*://www.instagram.com/reels",
+    "*://www.instagram.com/reels/*",
+    "*://www.instagram.com/reel",
+    "*://www.instagram.com/reel/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -25,7 +28,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://www.instagram.com/*"],
+      "matches": [
+        "*://www.instagram.com/reels",
+        "*://www.instagram.com/reels/*",
+        "*://www.instagram.com/reel",
+        "*://www.instagram.com/reel/*"
+      ],
       "js": ["content-script.js"],
       "css": ["content-style.css"],
       "run_at": "document_idle"
